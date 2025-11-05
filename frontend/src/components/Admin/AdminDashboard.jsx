@@ -23,7 +23,6 @@ const AdminDashboard = () => {
       window.location.href = '/';
     }
   }, [user, toast]);
-
   // Fetch data based on active tab
   useEffect(() => {
     fetchData();

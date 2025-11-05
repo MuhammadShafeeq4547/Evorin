@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Heart, 
@@ -7,15 +7,24 @@ import {
   Bookmark, 
   MoreHorizontal,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Edit,
+  Trash2,
+  Flag,
+  Link as LinkIcon,
+  UserX
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import Avatar from '../UI/Avatar';
 import axios from 'axios';
 import ProgressiveImage from '../UI/ProgressiveImage';
 import { useSocket } from '../../contexts/SocketContext';
+import EditPostModal from './EditPostModal';
+import PostOptionsModal from './PostOptionsModal';
+import EditPostModal from './EditPostModal';
+import DeletePostModal from './DeletePostModal';
 
-const Post = ({ post, onUpdate }) => {
+const Post = ({ post, onUpdate, onDelete }) => {
   const [isLiked, setIsLiked] = useState(post.isLiked || false);
   const [likesCount, setLikesCount] = useState(post.likes?.length || 0);
   const [isSaved, setIsSaved] = useState(post.isSaved || false);
@@ -26,6 +35,10 @@ const Post = ({ post, onUpdate }) => {
   const [showMore, setShowMore] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const menuRef = useRef(null);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -37,6 +50,18 @@ const Post = ({ post, onUpdate }) => {
       setIsSaved(post.saved.includes(user?._id));
     }
   }, [post, user]);
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setShowMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const { socket } = useSocket();
 
@@ -174,8 +199,21 @@ const Post = ({ post, onUpdate }) => {
     return null;
   }
 
+  const handlePostUpdate = (updatedPost) => {
+    if (onUpdate) {
+      onUpdate(updatedPost);
+    }
+  };
+
+  const handlePostDelete = (postId) => {
+    if (onDelete) {
+      onDelete(postId);
+    }
+  };
+
   return (
-    <div className="bg-white border border-gray-200 rounded-lg mb-6 max-w-lg mx-auto shadow-sm">
+    <>
+      <div className="bg-white border border-gray-200 rounded-lg mb-6 max-w-lg mx-auto shadow-sm">
       {/* Post Header */}
       <div className="flex items-center justify-between p-4">
         <Link to={`/profile/${post.user.username}`} className="flex items-center">
@@ -191,9 +229,71 @@ const Post = ({ post, onUpdate }) => {
             )}
           </div>
         </Link>
-        <button className="text-gray-400 hover:text-gray-600 p-1">
-          <MoreHorizontal className="w-5 h-5" />
-        </button>
+        <div className="relative" ref={menuRef}>
+          <button 
+            onClick={() => setShowMenu(!showMenu)}
+            className="text-gray-400 hover:text-gray-600 p-1 transition-colors"
+          >
+            <MoreHorizontal className="w-5 h-5" />
+          </button>
+
+          {/* Dropdown Menu */}
+          {showMenu && (
+            <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-10">
+              {post.user._id === user?._id ? (
+                <>
+                  <button
+                    onClick={() => {
+                      setShowEditModal(true);
+                      setShowMenu(false);
+                    }}
+                    className="w-full flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    <Edit className="w-4 h-4 mr-3" />
+                    Edit post
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowDeleteModal(true);
+                      setShowMenu(false);
+                    }}
+                    className="w-full flex items-center px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4 mr-3" />
+                    Delete post
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(window.location.origin + `/p/${post._id}`);
+                      setShowMenu(false);
+                    }}
+                    className="w-full flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    <LinkIcon className="w-4 h-4 mr-3" />
+                    Copy link
+                  </button>
+                  <button
+                    onClick={() => setShowMenu(false)}
+                    className="w-full flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    <UserX className="w-4 h-4 mr-3" />
+                    Unfollow
+                  </button>
+                  <button
+                    onClick={() => setShowMenu(false)}
+                    className="w-full flex items-center px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    <Flag className="w-4 h-4 mr-3" />
+                    Report
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Post Images */}
@@ -412,6 +512,23 @@ const Post = ({ post, onUpdate }) => {
         </form>
       </div>
     </div>
+
+    {/* Edit Modal */}
+    <EditPostModal
+      isOpen={showEditModal}
+      onClose={() => setShowEditModal(false)}
+      post={post}
+      onUpdate={handlePostUpdate}
+    />
+
+    {/* Delete Modal */}
+    <DeletePostModal
+      isOpen={showDeleteModal}
+      onClose={() => setShowDeleteModal(false)}
+      post={post}
+      onDelete={handlePostDelete}
+    />
+  </>
   );
 };
 

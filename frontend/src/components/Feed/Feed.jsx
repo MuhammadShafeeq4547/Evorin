@@ -9,6 +9,7 @@ import Button from '../UI/Button';
 import Avatar from '../UI/Avatar';
 import { Plus, Camera, Users, Compass } from 'lucide-react';
 import StoryBar from '../Stories/StoryBar';
+import { PostSkeleton } from '../UI/Skeleton';
 
 const SuggestedUsers = ({ users, onFollow }) => {
   if (!users || users.length === 0) return null;
@@ -86,26 +87,7 @@ const EmptyFeed = () => (
 const LoadingFeed = () => (
   <div className="space-y-6 max-w-lg mx-auto">
     {[...Array(3)].map((_, index) => (
-      <div key={index} className="bg-white border border-gray-200 rounded-lg animate-pulse">
-        <div className="p-4 flex items-center space-x-3">
-          <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
-          <div className="space-y-1 flex-1">
-            <div className="h-3 bg-gray-300 rounded w-24"></div>
-            <div className="h-2 bg-gray-300 rounded w-16"></div>
-          </div>
-        </div>
-        <div className="aspect-square bg-gray-300"></div>
-        <div className="p-4 space-y-2">
-          <div className="flex space-x-4">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="w-6 h-6 bg-gray-300 rounded"></div>
-            ))}
-          </div>
-          <div className="h-3 bg-gray-300 rounded w-20"></div>
-          <div className="h-3 bg-gray-300 rounded w-full"></div>
-          <div className="h-2 bg-gray-300 rounded w-16"></div>
-        </div>
-      </div>
+      <PostSkeleton key={index} />
     ))}
   </div>
 );
@@ -243,6 +225,10 @@ const Feed = () => {
     ));
   };
 
+  const handlePostDelete = (postId) => {
+    setPosts(prev => prev.filter(post => post._id !== postId));
+  };
+
   const refreshFeed = () => {
     setError(null);
     fetchPosts(1, true);
@@ -286,7 +272,7 @@ const Feed = () => {
           <AnimatePresence>
             {posts.map((post) => (
               <motion.div key={post._id} layout initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-                <Post post={post} onUpdate={handlePostUpdate} />
+                <Post post={post} onUpdate={handlePostUpdate} onDelete={handlePostDelete} />
               </motion.div>
             ))}
           </AnimatePresence>

@@ -18,6 +18,8 @@ import Button from '../UI/Button';
 import ProgressiveImage from '../UI/ProgressiveImage';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSocket } from '../../contexts/SocketContext';
+import { ProfileSkeleton } from '../UI/Skeleton';
+import { ProfileSkeleton } from '../UI/Skeleton';
 
 const ProfilePage = () => {
   const { username } = useParams();
@@ -282,27 +284,7 @@ const ProfilePage = () => {
   };
 
   if (loading) {
-    return (
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="animate-pulse">
-          <div className="flex items-center mb-8">
-            <div className="w-32 h-32 bg-gray-300 rounded-full mr-8"></div>
-            <div className="flex-1 space-y-4">
-              <div className="h-6 bg-gray-300 rounded w-48"></div>
-              <div className="flex space-x-8">
-                {[...Array(3)].map((_, i) => (
-                  <div key={i} className="h-4 bg-gray-300 rounded w-20"></div>
-                ))}
-              </div>
-              <div className="space-y-2">
-                <div className="h-4 bg-gray-300 rounded w-32"></div>
-                <div className="h-3 bg-gray-300 rounded w-64"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <ProfileSkeleton />;
   }
 
   if (!profile) {

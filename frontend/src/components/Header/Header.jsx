@@ -248,12 +248,20 @@ const Header = () => {
       <div className="max-w-5xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+          <Link to="/" className="text-xl md:text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
             Instagram
           </Link>
           
-          {/* Search Bar */}
-          <div className="relative flex-1 max-w-xs mx-8" ref={searchRef}>
+          {/* Mobile Search Icon */}
+          <button 
+            onClick={() => setShowSearch(!showSearch)}
+            className="sm:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
+          >
+            <Search className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+          </button>
+          
+          {/* Search Bar - Hidden on mobile, shown on tablet+ */}
+          <div className="relative flex-1 max-w-xs mx-4 md:mx-8 hidden sm:block" ref={searchRef}>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <input
@@ -296,8 +304,8 @@ const Header = () => {
             </div>
           </div>
           
-          {/* Navigation Icons */}
-          <div className="flex items-center space-x-6">
+          {/* Navigation Icons - Hidden on mobile (using bottom nav instead) */}
+          <div className="hidden md:flex items-center space-x-6">
             <Link 
               to="/" 
               className={`hover:text-gray-600 transition-colors ${isActiveRoute('/') ? 'text-black' : 'text-gray-400'}`}

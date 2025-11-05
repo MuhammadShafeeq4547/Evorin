@@ -25,6 +25,8 @@ import Avatar from '../UI/Avatar';
 import Button from '../UI/Button';
 import { formatDistanceToNow } from 'date-fns';
 import ProgressiveImage from '../UI/ProgressiveImage';
+import { MessagesSkeleton } from '../UI/Skeleton';
+import { MessagesSkeleton } from '../UI/Skeleton';
 
 // MessageBubble component for individual messages
 const MessageBubble = ({ message, isOwn, showAvatar = true, nextIsSameUser = false }) => {
@@ -358,27 +360,7 @@ const MessagesPage = () => {
   };
 
   if (loading) {
-    return (
-      <div className="flex h-[calc(100vh-64px)]">
-        <div className="w-1/3 border-r bg-white">
-          <div className="p-4 animate-pulse">
-            <div className="h-6 bg-gray-300 rounded mb-4"></div>
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="flex items-center p-3 mb-2">
-                <div className="w-10 h-10 bg-gray-300 rounded-full mr-3"></div>
-                <div className="flex-1">
-                  <div className="h-4 bg-gray-300 rounded mb-1"></div>
-                  <div className="h-3 bg-gray-300 rounded w-3/4"></div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="flex-1 flex items-center justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-        </div>
-      </div>
-    );
+    return <MessagesSkeleton />;
   }
 
   return (

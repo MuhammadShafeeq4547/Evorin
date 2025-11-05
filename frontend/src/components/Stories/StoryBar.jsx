@@ -6,9 +6,12 @@ import StoryViewer from './StoryViewer';
 import SeenByModal from './SeenByModal';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSocket } from '../../contexts/SocketContext';
+import { StorySkeleton } from '../UI/Skeleton';
+import { StorySkeleton } from '../UI/Skeleton';
 
 const StoryBar = () => {
   const [stories, setStories] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [isUploadOpen, setUploadOpen] = useState(false);
   const [viewerOpen, setViewerOpen] = useState(false);
   const [viewerIndex, setViewerIndex] = useState(0);
@@ -19,6 +22,7 @@ const StoryBar = () => {
 
   const fetch = async () => {
     try {
+      setLoading(true);
       let res;
       try {
         res = await axios.get('/stories');
@@ -31,6 +35,8 @@ const StoryBar = () => {
       if (res && res.data && res.data.success) setStories(res.data.stories);
     } catch (err) {
       console.error('Fetch stories failed', err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -73,6 +79,14 @@ const StoryBar = () => {
   const onUploaded = (story) => {
     setStories(prev => [story, ...prev]);
   };
+
+  if (loading) {
+    return <StorySkeleton />;
+  }
+
+  if (loading) {
+    return <StorySkeleton />;
+  }
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-3 mb-6">

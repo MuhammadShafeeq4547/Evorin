@@ -16,6 +16,11 @@ import MessagesPage from './components/Messages/MessagesPage';
 import { CreatePost } from './components/CreatePost/CreatePost';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
+import ForgotPassword from './components/Auth/ForgotPassword';
+import ResetPassword from './components/Auth/ResetPassword';
+import EmailVerification from './components/Auth/EmailVerification';
+import VerificationBanner from './components/Auth/VerificationBanner';
+import MobileNav from './components/Navigation/MobileNav';
 
 // Settings component placeholder
 const SettingsPage = () => (
@@ -160,14 +165,18 @@ const App = () => {
                 {/* Public Routes */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password/:token" element={<ResetPassword />} />
+                <Route path="/verify-email/:token" element={<EmailVerification />} />
                 
                 {/* Protected Routes */}
                 <Route
                   path="/*"
                   element={
                     <ProtectedRoute>
+                      <VerificationBanner />
                       <Header />
-                      <main className="pt-4 pb-8">
+                      <main className="pt-4 pb-20 md:pb-8">
                         <Routes>
                           {/* Feed */}
                           <Route path="/" element={<Feed />} />
@@ -194,6 +203,7 @@ const App = () => {
                           <Route path="*" element={<Navigate to="/" replace />} />
                         </Routes>
                       </main>
+                      <MobileNav />
                     </ProtectedRoute>
                   }
                 />

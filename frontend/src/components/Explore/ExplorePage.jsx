@@ -4,6 +4,8 @@ import { Heart, MessageCircle, Play } from 'lucide-react';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSocket } from '../../contexts/SocketContext';
+import { ExploreSkeleton } from '../UI/Skeleton';
+import { ExploreSkeleton } from '../UI/Skeleton';
 
 const PLACEHOLDER = '/placeholder-image.jpg';
 
@@ -129,11 +131,7 @@ const ExplorePage = () => {
       <h2 className="text-2xl font-semibold mb-4">Explore</h2>
 
       {loading && posts.length === 0 ? (
-        <div className="grid grid-cols-3 gap-2 md:gap-4">
-          {[...Array(21)].map((_, i) => (
-            <div key={i} className={`aspect-square bg-gray-200 animate-pulse rounded-md`} />
-          ))}
-        </div>
+        <ExploreSkeleton />
       ) : (
         <div className="grid grid-cols-3 gap-2 md:gap-4 auto-rows-fr">
           <AnimatePresence>
